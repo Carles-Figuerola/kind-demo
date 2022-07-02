@@ -1,0 +1,38 @@
+#!/bin/bash
+
+## Check binary requirements
+echo "Checking the pre-requirements are installed"
+command_list="docker kubectl helm kind"
+errors=0
+for command in $command_list; do
+  if ! command -v "$command" &> /dev/null
+  then
+    echo "❌ $command not found"
+    errors=$((errors+1))
+  else
+    echo "✔️  $command found"
+  fi
+done
+
+echo "Checking the port 8888 is free"
+if command -v ss &> /dev/null ; then
+  port_forward=$(ss -tunlp | grep LISTEN[^I] | grep -o 8888  | head -n1)
+elif command -v netstat &> /dev/null ; then
+  port_found=$(netstat -an | grep LISTEN[^I] | grep -o 8888  | head -n1)
+else
+  echo "❗ Cannot check port, make sure that port 8888 is not being used"
+  port_found=""
+fi
+
+if [[ "$port_found" == "" ]] ; then
+  echo "✔️  Port 8888 is empty"
+else
+  errors=$((errors+1))
+  echo "❌ Port 8888 is being used, please stop what's listening there"
+fi
+
+if [ $errors -gt 0 ] ; then
+  echo "Please fix the errors above before proceeding"
+  exit 1
+fi
+echo "Everything looks, proceeding"

@@ -1,11 +1,20 @@
-restart: stop start install
+restart: cleanup precheck stop-fast start-fast install-fast
 
-install:
-	./install.sh
+install: cleanup precheck install-fast
+install-fast:
+	./install
+	./info
 
-start:
+start: cleanup precheck start-fast
+start-fast:
 	kind create cluster --name k8s-test
 
-stop:
-	killall kubectl || true
+stop: cleanup precheck stop-fast
+stop-fast:
 	kind delete cluster --name k8s-test
+
+cleanup:
+	killall kubectl || true
+
+precheck:
+	./precheck
