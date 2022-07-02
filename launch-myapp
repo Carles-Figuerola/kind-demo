@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo "This script will setup your application to use in kind"
+read -p "What is the name of your application? " appname
+read -p "What's the image name of your application (including version)? " image
+read -p "What's the port your application is listening on? " port
+
+echo
+echo "Your application will be installed in your kind cluster"
+echo "If you want to install it again without the same"
+echo "questions, you can run:"
+echo "  ./install-$appname.sh"
+echo
+
+cat > install-$appname.sh << EOF
+#!/bin/bash
+kind load docker-image --name k8s-test $image || true
+helm upgrade -i --set appname=$appname --set image=$image --set port=$port $appname myapp
+echo "You should now be able to access your app at: http://localhost:8888/$appname"
+EOF
+chmod a+x install-$appname.sh
+
+./install-$appname.sh

@@ -18,3 +18,6 @@ cleanup:
 
 precheck:
 	./precheck
+
+launch-myapp:
+	./launch-myapp

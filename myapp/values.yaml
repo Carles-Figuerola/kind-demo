@@ -1,0 +1,4 @@
+appname: myapp
+image: myapp:version
+port: 80
+
